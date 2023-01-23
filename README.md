@@ -1,1 +1,3 @@
 # Relio
+
+Introducing Relio, the ultimate personal relationship management tool powered by AI technology. With Relio, you can easily nurture and maintain the relationships that matter the most to you and your network. Our app streamlines the process of keeping in touch with clients, partners, and colleagues, making it easy to stay connected, even when you're swamped with work. With features like automated reminders to reconnect with individuals, sentiment analysis to uncover new opportunities, and a tagging system to find the areas of your life that matter the most, Relio helps you turn your life connections into experiences that drive growth and success. With Relio, you'll be able to tap into the full potential of your relationships, and take yourself to new heights.
