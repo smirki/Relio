@@ -1,0 +1,197 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: black;
+}
+
+.container-fluid {
+    height: 100%;
+}
+
+.taskbar {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar {
+    background-color: #333;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+svg {
+    width: 100%;
+    height: calc(100vh - 56px);
+    margin-top: 20px;
+}
+
+        .node {
+            cursor: pointer;
+            fill: #333;
+            stroke: rgba(255, 255, 255, 0.12);
+            stroke-width: 1px;
+            filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.12)),
+                    drop-shadow(0 1px 1px rgba(255, 255, 255, 0.24));
+            border-radius: 10px;
+        }
+
+        .node rect {
+          width: 180px;
+          height: 100px;
+          fill: #444;
+          stroke: #333;
+          stroke-width: 2px;
+          border-radius: 10px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .node text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            fill: #fff;
+        }
+
+        .node .title {
+          font-size: 18px;
+          font-weight: bold;
+          text-align: center;
+          dominant-baseline: central;
+          fill: #fff;
+          font-family: "Roboto", sans-serif;
+        }
+
+        .node .subtitle {
+          font-size: 14px;
+          text-align: left;
+          dominant-baseline: central;
+          fill: #fff;
+          font-family: "Roboto", sans-serif;
+          margin: 5px;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+        .selected {
+            fill: blue;
+        }
+
+        .highlight {
+            fill: yellow;
+        }
+
+        .link.selected {
+            stroke: blue;
+        }
+
+        .timeline-bar {
+  height: 30px;
+  background-color: #333;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.timeline-progress {
+  height: 100%;
+  background-color: blue;
+  width: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.timeline-months {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 95vh;
+  margin-top: 20px;
+  overflow-y: auto;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  padding: 20px;
+  background-color: #444;
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.card .line {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  margin: 10px 0;
+}
+
+.card p {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.add-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  height: 10px;
+  background-color: #333;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
