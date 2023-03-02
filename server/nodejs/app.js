@@ -1,27 +1,85 @@
+// Import required packages
 const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const cors = require('cors');
 
-// create the server
+// Initialize the application
 const app = express();
 
-// use middleware to parse request body into json
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// Create a new SQLite database connection
+const db = new sqlite3.Database('./database.db');
 
-// enable cross origin resource sharing (CORS) for our api calls
-app.use(cors());
+// Create a table to store user credentials
+db.serialize(() => {
+  db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL)');
+});
 
-// establish connection to SQL database
-const dbConn = mysql.createConnection({ host : 'localhost', user : 'user_name', password : 'password', database : 'database' }); dbConn.connect((err) => { if (err){ console.log("Error connecting to Database"); } else { console.log("Connected to Database"); }});
+// Set up middleware to parse incoming requests as JSON
+app.use(express.json());
 
-// create a route for our rest API that returns data from the database
-app.get('/events', (req, res) => { let sqlQueryString = `SELECT * FROM events`; dbConn.query(sqlQueryString, (err, result) => { if (err){ res .status(400).send({ message: err }); } else { res .status(200).send({ message: "Success", data: result }); } }) });
+// Set up a route to handle user authentication
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
 
-// create a route that allows users to authenticate with their credentials
-app.post('/login', (req, res) =>{ let username= req .body .username; let password= req .body .password; let sqlQueryString= `SELECT * FROM users WHERE username='${username}' AND password='${password}'`; dbConn.query(sqlQueryString, (err, result) =>{ if (!result || !result[0]){ return res .status(400).send({message:"Invalid Credentials"}); }else{ let token= jwt .sign ({ id:result[0].id}, process .env .SECRET ); return res .status(200).send ({ auth:true , token}); } }) });
+  // Check if the user exists in the database
+  db.get('SELECT * FROM users WHERE username = ?', username, (err, row) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
 
-// start the server on port 3000 and log a successful message in the console when ready
-app.listen(3000, ()=> console .log ("Server running on port 3000"));
+    if (!row) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Compare the submitted password to the hashed password in the database
+    bcrypt.compare(password, row.password, (err, result) => {
+      if (err) {
+        console.error(err.message);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      if (!result) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+      // If the credentials are valid, create a JSON Web Token and return it to the client
+      const token = jwt.sign({ id: row.id }, 'my_secret_key', { expiresIn: '1h' });
+      res.json({ token });
+    });
+  });
+});
+
+// Set up a route to handle API requests
+app.get('/data', (req, res) => {
+  // Verify the authentication token
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Missing authorization header' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, 'my_secret_key', (err, decoded) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(401).json({ message: 'Invalid authorization token' });
+    }
+
+    // Query the database and return the results as JSON
+    db.all('SELECT * FROM my_table', (err, rows) => {
+      if (err) {
+        console.error(err.message);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+
+      res.json(rows);
+    });
+  });
+});
+
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
