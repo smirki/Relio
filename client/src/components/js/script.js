@@ -146,7 +146,7 @@ const data = {
   }
   
   function generateCards() {
-    const cardContainer = d3.select('.card-container');
+    const cardContainer = Nimble.grab("right-card-container");
     for (let i = 0; i < 8; i++) {
       const card = document.createElement('div');
       card.classList.add('card');
@@ -155,10 +155,11 @@ const data = {
         <div class="line"></div>
         <p>Dis do be the user</p>
       `;
-      cardContainer.node().appendChild(card);
+      cardContainer.appendChild(card);
     }
   
     const addMoreButton = document.createElement('div');
+
     addMoreButton.classList.add('add-more');
     addMoreButton.innerText = 'Add More';
     cardContainer.node().appendChild(addMoreButton);
