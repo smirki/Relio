@@ -182,3 +182,25 @@ svg {
     font-weight: bold;
     margin-bottom: 20px;
 }
+.omnibar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+}
+.omnibar input[type="text"] {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    padding: 5px;
+}
+.omnibar input[type="text"]::placeholder {
+    color: white;
+}
