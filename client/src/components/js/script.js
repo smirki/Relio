@@ -151,9 +151,9 @@ const data = {
       const card = document.createElement('div');
       card.classList.add('card');
       card.innerHTML = `
-        <h2>Card ${i + 1}</h2>
+        <h2>User ${i + 1}</h2>
         <div class="line"></div>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in lobortis purus. Integer euismod magna non velit efficitur, non lobortis arcu bibendum.</p>
+        <p>Dis do be the user</p>
       `;
       cardContainer.node().appendChild(card);
     }
