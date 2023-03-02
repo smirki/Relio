@@ -14,13 +14,66 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-3 taskbar">
+            <div class="col-md-2 taskbar">
                 <div class="card-container"></div>
             </div>
-            <div class="col-md-8">
-                <nav class="navbar navbar-expand-sm">
-                    <a class="navbar-brand" href="#">Editable Node Graph</a>
-                </nav>
+            <div class="col-md-9">
+              <nav class="navbar navbar-expand-sm">
+                <a class="navbar-brand" href="#">Relio</a>
+                <div class="navbar-nav mr-auto">
+                  <div class="nav-item dropdown">
+                      <a class="nav-link rounded dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Timeline
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="#">Option 1</a>
+                          <a class="dropdown-item" href="#">Option 2</a>
+                          <a class="dropdown-item" href="#">Option 3</a>
+                      </div>
+                  </div>
+                  <div class="nav-item dropdown">
+                      <a class="nav-link rounded dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Profile
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="#">Option 1</a>
+                          <a class="dropdown-item" href="#">Option 2</a>
+                          <a class="dropdown-item" href="#">Option 3</a>
+                      </div>
+                  </div>
+                  <div class="nav-item dropdown">
+                      <a class="nav-link rounded dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Details
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="#">Option 1</a>
+                          <a class="dropdown-item" href="#">Option 2</a>
+                          <a class="dropdown-item" href="#">Option 3</a>
+                      </div>
+                  </div>
+                  <div class="nav-item dropdown">
+                      <a class="nav-link rounded dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Tasks
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="#">Option 1</a>
+                          <a class="dropdown-item" href="#">Option 2</a>
+                          <a class="dropdown-item" href="#">Option 3</a>
+                      </div>
+                  </div>
+                  <div class="nav-item dropdown">
+                      <a class="nav-link rounded dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Reminders
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="#">Option 1</a>
+                          <a class="dropdown-item" href="#">Option 2</a>
+                          <a class="dropdown-item" href="#">Option 3</a>
+                      </div>
+                  </div>
+              </div>
+            </nav>
+            
                 <svg></svg>
                 <div class="timeline-bar">
                     <div class="timeline-progress"></div>
@@ -30,7 +83,23 @@
     </div>
             </div>
             <div class="col-md-1 taskbar">
-                <div class="card-container"></div>
+              <div class="card-container">
+                <div class="card">
+                  <h6>Properties</h6>
+                  <hr class="line">
+                  <p>Position:</p>
+                  <input type="text" placeholder="X" value="100">
+                  <input type="text" placeholder="Y" value="50">
+                  <input type="text" placeholder="Z" value="0">
+                  <br>
+                  <p>Size:</p>
+                  <input type="text" placeholder="Width" value="200">
+                  <input type="text" placeholder="Height" value="100">
+                  <br>
+                  <p>Color:</p>
+                  <input type="color" value="#ff0000">
+                </div>
+              </div>
             </div>
         </div>
     </div>
