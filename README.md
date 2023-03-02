@@ -47,7 +47,7 @@ Relio is developed and maintained by the following contributors:
 
 -   [Marnix Devaney](https://github.com/mamix-dev)
 -   [Manav Majumdar](https://github.com/smirki)
--   [Ayush Lanka](https://github.com/ayush-lanka)
+-   [Ayush Lanka](https://github.com/aslanka)
 
 We welcome contributions from anyone interested in helping to improve Relio. To contribute:
 
