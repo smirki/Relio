@@ -1,85 +1,191 @@
-// Import required packages
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3');
+const session = require('express-session');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-// Initialize the application
 const app = express();
+const port = 3000;
 
-// Create a new SQLite database connection
-const db = new sqlite3.Database('./database.db');
-
-// Create a table to store user credentials
-db.serialize(() => {
-  db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL)');
+// Check if database file exists
+const dbFile = './relio_db.sqlite';
+const db = new sqlite3.Database(dbFile, (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log(`Connected to the Relio database: ${dbFile}`);
 });
 
-// Set up middleware to parse incoming requests as JSON
+// Create tables if they do not exist
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY,
+    username TEXT,
+    email TEXT,
+    password TEXT,
+    date_created TEXT
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS contacts (
+    contact_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    name TEXT,
+    relationship TEXT,
+    company TEXT,
+    position TEXT,
+    email TEXT,
+    phone_number TEXT,
+    date_added TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS reminders (
+    reminder_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    contact_id INTEGER,
+    reminder_type TEXT,
+    reminder_date TEXT,
+    reminder_notes TEXT,
+    reminder_status TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(contact_id) REFERENCES contacts(contact_id)
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS tasks (
+    task_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    task_description TEXT,
+    task_due_date TEXT,
+    task_notes TEXT,
+    task_status TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS activity_types (
+    activity_type_id INTEGER PRIMARY KEY,
+    activity_type_description TEXT
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS activities (
+    activity_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    contact_id INTEGER,
+    activity_type_id INTEGER,
+    activity_date TEXT,
+    activity_notes TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(contact_id) REFERENCES contacts(contact_id),
+    FOREIGN KEY(activity_type_id) REFERENCES activity_types(activity_type_id)
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS groups (
+    group_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    group_name TEXT,
+    group_description TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+  )`);
+  
+  db.run(`CREATE TABLE IF NOT EXISTS group_members (
+    group_member_id INTEGER PRIMARY KEY,
+    group_id INTEGER,
+    contact_id INTEGER,
+    FOREIGN KEY(group_id) REFERENCES groups(group_id),
+    FOREIGN KEY(contact_id) REFERENCES contacts(contact_id)
+  )`);
+});
+
+// Create SQLite3 file if it does not exist
+const fs = require('fs');
+if (!fs.existsSync(dbFile)) {
+  db.close();
+  fs.openSync(dbFile, 'w');
+  const newDb = new sqlite3.Database(dbFile);
+  console.log(`Created new Relio database file: ${dbFile}`);
+}
+
+// Set up session middleware
+app.use(session({
+  secret: 'supersecretkey',
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Set up middleware to parse JSON data
 app.use(express.json());
 
-// Set up a route to handle user authentication
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  // Check if the user exists in the database
-  db.get('SELECT * FROM users WHERE username = ?', username, (err, row) => {
-    if (err) {
-      console.error(err.message);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-
-    if (!row) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Compare the submitted password to the hashed password in the database
-    bcrypt.compare(password, row.password, (err, result) => {
-      if (err) {
-        console.error(err.message);
-        return res.status(500).json({ message: 'Internal server error' });
-      }
-
-      if (!result) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
-
-      // If the credentials are valid, create a JSON Web Token and return it to the client
-      const token = jwt.sign({ id: row.id }, 'my_secret_key', { expiresIn: '1h' });
-      res.json({ token });
-    });
-  });
-});
-
-// Set up a route to handle API requests
-app.get('/data', (req, res) => {
-  // Verify the authentication token
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Missing authorization header' });
+// Middleware to check if user is authenticated
+const checkAuth = (req, res, next) => {
+  if (!req.session.user_id) {
+    res.redirect('/login');
+  } else {
+    next();
   }
+};
 
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, 'my_secret_key', (err, decoded) => {
-    if (err) {
-      console.error(err.message);
-      return res.status(401).json({ message: 'Invalid authorization token' });
-    }
+// Signup route
+app.get('/signup', (req, res) => {
+  res.sendFile(__dirname + '/views/signup.html');
+});
 
-    // Query the database and return the results as JSON
-    db.all('SELECT * FROM my_table', (err, rows) => {
-      if (err) {
-        console.error(err.message);
-        return res.status(500).json({ message: 'Internal server error' });
-      }
-
-      res.json(rows);
+app.post('/signup', (req, res) => {
+  const { username, email, password } = req.body;
+  
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) throw err;
+    
+    db.run(`INSERT INTO users (username, email, password, date_created) 
+            VALUES (?, ?, ?, ?)`, [username, email, hash, new Date()], (err) => {
+      if (err) throw err;
+      
+      res.redirect('/login');
     });
   });
 });
 
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+// Login route
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/views/login.html');
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  db.get(`SELECT user_id, email, password FROM users WHERE email = ?`, [email], (err, row) => {
+    if (err) throw err;
+    
+    if (!row) {
+      res.status(400).json({ error: 'Invalid email or password' });
+    } else {
+      bcrypt.compare(password, row.password, (err, result) => {
+        if (err) throw err;
+        
+        if (result) {
+          req.session.user_id = row.user_id;
+          res.redirect('/dashboard');
+        } else {
+          res.status(400).json({ error: 'Invalid email or password' });
+        }
+      });
+    }
+  });
+});
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+    res.redirect('/login');
+  });
+});
+
+// Dashboard route
+app.get('/dashboard', checkAuth, (req, res) => {
+  db.all(`SELECT * FROM contacts WHERE user_id = ?`, [req.session.user_id], (err, rows) => {
+    if (err) throw err;
+    res.json(rows);
+  });
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Relio server listening at http://localhost:${port}`);
 });
