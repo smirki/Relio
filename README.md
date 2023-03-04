@@ -64,4 +64,4 @@ Thank you for contributing to Relio! 🙏
 License 📝
 ----------
 
-Relio is licensed under the [MIT License](https://chat.openai.com/LICENSE). Feel free to use, modify, and distribute the code as you see fit.
+Relio is licensed under the [MIT License](https://opensource.org/license/mit/). Feel free to use, modify, and distribute the code as you see fit.
